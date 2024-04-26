@@ -1,0 +1,50 @@
+Q) Try using @Autowired injection on a field that is final
+
+In Spring, we typically use `@Autowired` annotation to inject dependencies into fields, methods, or constructors.
+However, injecting dependencies into final fields directly using `@Autowired` is not supported by default.
+This is because final fields must be initialized exactly once, and Spring uses reflection to set the field value after the object has been instantiated,
+which violates the final field initialization rule.
+
+However, we can achieve a similar effect by using constructor injection and marking the constructor parameter as final. Here's an example:
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyComponent {
+
+    private final Foo foo;
+
+    @Autowired
+    public MyComponent(Foo foo) {
+        this.foo = foo;
+    }
+
+    public void doSomething() {
+        // Use the injected Foo object
+        System.out.println(foo.hello());
+    }
+}
+```
+
+In this example, `MyComponent` has a final field `foo`, which is injected via constructor injection using `@Autowired`.
+The constructor parameter `foo` is marked as final, ensuring that it can only be assigned once.
+ This approach maintains the immutability of the field while still allowing Spring to inject the dependency.
+
+If you try to use `@Autowired` directly on a final field like so:
+
+```java
+@Component
+public class MyComponent {
+
+    @Autowired
+    private final Foo foo;
+
+    public void doSomething() {
+        // Use the injected Foo object
+        System.out.println(foo.hello());
+    }
+}
+```
+
+You'll likely encounter a compilation error or Spring won't be able to initialize the field properly due to final field initialization constraints.

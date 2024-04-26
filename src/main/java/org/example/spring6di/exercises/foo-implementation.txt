@@ -1,0 +1,63 @@
+Q)
+Create interfaces Foo and an implementation for that interface.
+Since we can reference the object both via implementation class and interface, try defining beans with both return types
+and inject them as a dependency in another bean.
+Do you notice something strange when you reference a dependency with a different type than it was defined with?
+
+
+Step 1: Define the Interface and Implementations
+
+//Foo implementation
+public interface Foo {
+    String hello();
+}
+
+// FooImpl.java
+public class FooImpl implements Foo {
+    @Override
+    public String hello() {
+        return "Hello from FooImpl!";
+    }
+}
+
+Step 2: Configure Beans in Spring Context
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public Foo foo() {
+        return new FooImpl();
+    }
+
+    @Bean
+    public FooImpl fooImpl() {
+        return new FooImpl();
+    }
+}
+Step 3: Inject Dependencies
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyBean {
+
+    @Autowired
+    private Foo foo;
+
+    @Autowired
+    private FooImpl fooImpl;
+
+    public void print() {
+        System.out.println(foo.hello());
+        System.out.println(fooImpl.hello());
+    }
+}
+Observations
+When injecting dependencies using different types
+(Foo and FooImpl) but referencing the same object, Spring still resolves them correctly.
+However, it's recommended to be consistent in the type used for dependency injection and reference to maintain code clarity
+and prevent confusion.
+
